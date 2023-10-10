@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:mvc="http://www.springframework.org/schema/mvc"
+   xmlns:p="http://www.springframework.org/schema/p"
+   xmlns:tx="http://www.springframework.org/schema/tx"
+   xmlns:ctx="http://www.springframework.org/schema/context"  
+   xsi:schemaLocation="http://www.springframework.org/schema/beans   
+   http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+   http://www.springframework.org/schema/mvc
+   http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+   http://www.springframework.org/schema/context
+   http://www.springframework.org/schema/context/spring-context-2.5.xsd
+   http://www.springframework.org/schema/tx 
+   http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+   http://www.springframework.org/schema/mvc
+   http://www.springframework.org/schema/mvc/spring-mvc-2.5.xsd">
+   
+   <mvc:annotation-driven/>
+  <mvc:resources location="/WEB-INF/resources/" mapping="/resources/**"/>
+  
+  
+
+   <tx:annotation-driven/>
+  <ctx:component-scan base-package=" productcrudeoperation"></ctx:component-scan>
+  <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" name="viewResolver">
+  <property name="prefix" value="/WEB-INF/views/" />
+  <property name="suffix" value=".jsp"></property>
+  </bean>
+  
+   <!-- DATASOURCE OBJECTS -->
+    <bean class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+   name="ds">
+   
+   <property name="driverClassName"
+     value="com.mysql.cj.jdbc.Driver"/>
+   <property name="url"
+   value="jdbc:mysql://localhost:3306/productcrud"/>
+   <property name="username" value="root" />
+   <property name="password" value="root"></property>
+   
+   </bean>
+   
+    <!-- CONFIGURING LOCALSESSIONFACTORY -->
+   <bean class="org.springframework.orm.hibernate5.LocalSessionFactoryBean"
+   name="factory">
+    
+   
+   <!-- data source -->
+   <property name="dataSource" ref="ds"></property>
+   
+   <!--  hibernate properties -->
+   <property name="hibernateProperties">
+   <props>
+   <!-- 8 is used for mysql8.0 -->
+   <prop key="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</prop>
+   <prop key="hibernate.show_sql">true</prop>
+   <prop key="hibernate.hbm2ddl.auto">update</prop>
+   
+   
+   </props>
+   
+   </property>
+   
+   <!-- annotated classes -->
+   
+   <property name="annotatedClasses"> 
+   
+   <list>
+  
+   
+   <value>
+     <!-- GIVE FQCN OF YOUR CLASSS  -->
+    productcrudeoperation.model.Product
+   
+   </value>
+   
+   </list>
+   
+   </property>
+   
+   
+   </bean>
+   <!-- DECLARING HIBERNATE TEMPLATE -->
+     <bean class="org.springframework.orm.hibernate5.HibernateTemplate"
+    name="hibernateTemplate">
+    <property name="sessionFactory" ref="factory"></property>
+    </bean>
+    
+    <!-- DECLARING USERDAO CLASS  -->
+     <bean class="productcrudeoperation.dao.ProductDao" name="productdao">
+   <property name="hibernateTemplate" ref="hibernateTemplate"></property>
+   
+   </bean>
+   
+   
+     
+  
+    <!-- AUTOMATICALLY HANDLE TRANSACTION INSIDE THIS --> 
+   <bean class="org.springframework.orm.hibernate5.HibernateTransactionManager"
+   name="transactionManager">
+   <property name="sessionFactory" ref="factory"></property>
+   
+   </bean>
+     
+  
+  
+  </beans>
